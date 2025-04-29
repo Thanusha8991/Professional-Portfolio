@@ -1,0 +1,358 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
+        
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanusha Suthaharan - ePortfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeInUp {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        /* Theme Toggle */
+        .dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .dark-mode .bg-white { background-color: #2d3748; }
+        .dark-mode .bg-gray-50 { background-color: #1a202c; }
+        .dark-mode .text-gray-700 { color: #e2e8f0; }
+        .dark-mode .bg-blue-600 { background-color: #4a5568; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans transition-colors duration-300">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white p-4 sticky top-0 shadow-lg z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Portfolio</h1>
+            <div class="flex items-center space-x-6">
+                <ul class="flex space-x-6">
+                    <li><a href="#home" class="hover:text-gray-200 transition">Home</a></li>
+                    <li><a href="#about" class="hover:text-gray-200 transition">About</a></li>
+                    <li><a href="#experience" class="hover:text-gray-200 transition">Experience</a></li>
+                    <li><a href="#education" class="hover:text-gray-200 transition">Education</a></li>
+                    <li><a href="#certifications" class="hover:text-gray-200 transition">Certifications</a></li>
+                    <li><a href="#skills" class="hover:text-gray-200 transition">Skills</a></li>
+                    <li><a href="#projects" class="hover:text-gray-200 transition">Projects</a></li>
+                    <li><a href="#contact" class="hover:text-gray-200 transition">Contact</a></li>
+                </ul>
+                <button id="theme-toggle" class="text-white hover:text-gray-200">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="bg-white py-24">
+        <div class="container mx-auto text-center px-4">
+            <img src="profile.jpg" alt="Profile Picture" class="rounded-t-lg w-[350px] h-[450px] mx-auto mb-6 shadow-lg">
+            <h2 class="text-5xl font-extrabold mb-4 animate-fadeInUp">Hello, I'm Thanusha Suthaharan</h2>
+            <p class="text-xl text-gray-600 mb-6 animate-fadeInUp">I am an undergraduate student at Rajarata University of Sri Lanka</p>
+            <p class="text-gray-700 max-w-3xl mx-auto mb-8 animate-fadeInUp">
+                Welcome to my portfolio! I am passionate about Programming & Web Development | Exploring Science & Technology Integration . With a strong background in Programming and Chemistry, I deliver innovative solutions and drive impactful results. Connect with me to explore opportunities!
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="#contact" class="bg-blue-600 text-white py-3 px-6 rounded-full hover:bg-blue-700 transition animate-fadeInUp">Get in Touch</a>
+                <a href="CV.pdf" class="bg-gray-700 text-white py-3 px-6 rounded-full hover:bg-gray-800 transition animate-fadeInUp">Download CV</a>
+            </div>
+        </div>
+    </section>
+
+ <!-- About Section -->
+ <section id="about" class="py-24 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center mb-12 animate-fadeInUp">About Me</h2>
+        <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+            <p class="text-gray-700 leading-relaxed">
+                I am an undergraduate at Rajarata University of Sri Lanka, majoring in Chemistry and Computer Science.
+I am passionate about applying programming (Java, C, C++, Python) and web development (HTML, CSS, JavaScript) to solve problems in science and technology.
+With a strong interest in Computational Chemistry and Scientific Programming. My Microsoft certifications in Azure, Power Platform, and Dynamics 365 reflect my commitment to continuous learning. As a tutor at MCS IT Campus, I taught programming and mathematics, honing my ability to explain complex concepts clearly. My responsive web design project showcases my practical skills in creating user-friendly applications. I am eager to leverage my technical expertise and enthusiasm to contribute to innovative tech solutions. I aim to bridge scientific research and digital innovation.
+Always eager to learn, create, and contribute to interdisciplinary fields where Chemistry and Computing meet.
+            </p>
+        </div>
+    </div>
+</section>
+
+   <!-- Work Experience Section -->
+   <section id="experience" class="py-24 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center mb-12 animate-fadeInUp">Work Experience</h2>
+        <div class="space-y-8">
+            <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                <h3 class="text-2xl font-semibold">Tutor in Programming Language</h3>
+                <p class="text-gray-600">MCS IT Campus, Jaffna | 2021 – 2022</p>
+                <ul class="list-disc list-inside mt-4 text-gray-700">
+                    <li>Delivered engaging lessons on Java and C programming for Diploma in Information Technology (DIT) students, covering fundamental concepts and practical applications.</li>
+                    <li>Created structured lesson plans and exercises to enhance students’ coding skills.</li>
+                    <li>Fostered a supportive learning environment, improving students’ understanding of programming principles.</li>
+                </ul>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                <h3 class="text-2xl font-semibold">Tutor in Mathematics</h3>
+                <p class="text-gray-600">MCS IT Campus, Jaffna | 2021 – 2022</p>
+                <ul class="list-disc list-inside mt-4 text-gray-700">
+                    <li>Taught mathematics to GCE Ordinary Level students and introductory mathematics to DIT students, focusing on problem-solving and analytical techniques.</li>
+                    <li>Designed interactive teaching materials to make complex concepts accessible.</li>
+                    <li>Supported students in building confidence and achieving academic goals through personalized instruction.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+     <!-- Education Section -->
+     <section id="education" class="py-24">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 animate-fadeInUp">Education</h2>
+            <div class="space-y-8">
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Bachelor of Science, Computer Science and Chemistry</h3>
+                    <p class="text-gray-600">Rajarata University of Sri Lanka | 2021 – Expected 2025</p>
+                    <p class="text-gray-700 mt-4">
+                        Current GPA: 2.92<br>
+                        Core Subjects: Computer Science, Chemistry<br>
+                        Achievements: Actively engaged in programming and web development projects, applying skills in Java, Python, and web technologies.
+                    </p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Diploma in Information Technology</h3>
+                    <p class="text-gray-600">University of Colombo School of Computing, Sri Lanka | July 2022</p>
+                    <p class="text-gray-700 mt-4">
+                        Focus: Gained foundational skills in programming and IT systems.
+                    </p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Advanced Level in Biological Sciences</h3>
+                    <p class="text-gray-600">Hindu Ladies’ College, Jaffna, Sri Lanka | August 2019</p>
+                    <p class="text-gray-700 mt-4">
+                        Grades: Chemistry (A), Physics (S), Biology (C), General English (S)
+                    </p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Ordinary Level</h3>
+                    <p class="text-gray-600">Hindu Ladies’ College, Jaffna, Sri Lanka | December 2014</p>
+                    <p class="text-gray-700 mt-4">
+                        Grades: Mathematics (A), Science (B), English (C)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section id="certifications" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 animate-fadeInUp">Certifications</h2>
+            <div class="space-y-8">
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Microsoft Certified: Azure AI Fundamentals</h3>
+                    <p class="text-gray-600">Microsoft | April 2022</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Microsoft Certified: Azure Fundamentals</h3>
+                    <p class="text-gray-600">Microsoft | April 2022</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Microsoft Certified: Azure Data Fundamentals</h3>
+                    <p class="text-gray-600">Microsoft | April 2022</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Microsoft Certified: Security, Compliance, and Identity Fundamentals</h3>
+                    <p class="text-gray-600">Microsoft | May 2022</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Microsoft Certified: Power Platform Fundamentals</h3>
+                    <p class="text-gray-600">Microsoft | May 2022</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Microsoft Certified: Dynamics 365 Fundamentals (CRM)</h3>
+                    <p class="text-gray-600">Microsoft | June 2022</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Microsoft Certified: Dynamics 365 Fundamentals (ERP)</h3>
+                    <p class="text-gray-600">Microsoft | June 2022</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                    <h3 class="text-2xl font-semibold">Introduction to IoT</h3>
+                    <p class="text-gray-600">Cisco | December 2021</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Skills Section -->
+<section id="skills" class="py-24 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center mb-12 animate-fadeInUp">Skills</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Programming Languages -->
+            <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Programming Languages</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">Java</span>
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">C</span>
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">C++</span>
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">Python</span>
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">SQL</span>
+                </div>
+            </div>
+            <!-- Web Development -->
+            <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Web Development</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">HTML</span>
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">CSS</span>
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">JavaScript</span>
+                </div>
+            </div>
+            <!-- Tools and Platforms -->
+            <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Tools and Platforms</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">GitHub</span>
+                    <span class="bg-blue-600 text-white py-2 px-4 rounded-full text-sm">Visual Studio Code</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Projects Section -->
+<section id="projects" class="py-24">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center mb-12 animate-fadeInUp">Projects</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Web Development -->
+            <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Web Development</h3>
+                <div class="space-y-4">
+                    <div>
+                        <img src="port.PNG" alt="Art Portfolio Image" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                        <h4 class="text-lg font-semibold">Responsive Web Design - Art Portfolio</h4>
+                        <p class="text-gray-600">Technologies: HTML, CSS, JavaScript | June 2023 – July 2023</p>
+                        <p class="text-gray-700 mt-2">Designed and developed a responsive art portfolio website to showcase creative works, implementing modern web design techniques for optimal user experience across devices.</p>
+                        <a href="https://thanusha8991.github.io/Art-Portfolio/" target="_blank" class="text-blue-600 hover:underline mt-4 inline-block">View Project</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Programming -->
+            <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition animate-fadeInUp">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Programming</h3>
+                <div class="space-y-4">
+                    <div>
+                       
+                        <h4 class="text-lg font-semibold">Conversational Quiz Bot System</h4>
+                        <p class="text-gray-600">Technologies: Llama Index, Llama 2 LLM, Python | 2024 – Present (In Progress)</p>
+                        <p class="text-gray-700 mt-2">Developing a conversational quiz bot for a domain-specific Learning Management System (LMS) as part of my final-year project. Leveraging Llama Index for efficient data indexing and Llama 2 LLM for natural language understanding, the system aims to generate interactive quizzes and provide personalized learning experiences. Currently implementing core functionalities, including quiz generation and conversational interfaces, with ongoing work on system integration and testing.</p>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+    </div>
+</section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold mb-12 animate-fadeInUp">Get in Touch</h2>
+            <p class="text-gray-700 mb-8 animate-fadeInUp">I'm excited to connect and discuss opportunities. Reach out via email or LinkedIn!</p>
+            <div class="flex justify-center space-x-8 mb-8 animate-fadeInUp">
+                <a href="mailto:your.email@example.com" class="text-blue-600 hover:underline text-lg">
+                    <i class="fas fa-envelope mr-2"></i> thanu.suthaharan@gmail.com
+                </a>
+                <a href="https://www.linkedin.com/in/thanusha-suthaharan-36a653227" target="_blank" class="text-blue-600 hover:underline text-lg">
+                    <i class="fab fa-linkedin mr-2"></i> LinkedIn Profile
+                </a>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-6">
+        <div class="container mx-auto text-center">
+            <p>© 2025 Thanusha Suthaharan. All rights reserved.</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <a href="https://www.linkedin.com/in/thanusha-suthaharan-36a653227" target="_blank" class="text-white hover:text-gray-200">
+                    <i class="fab fa-linkedin fa-lg"></i>
+                </a>
+                <a href="mailto:your.email@example.com" class="text-white hover:text-gray-200">
+                    <i class="fas fa-envelope fa-lg"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Smooth Scroll and Theme Toggle Script -->
+    <script>
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Theme Toggle
+        const toggleButton = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        toggleButton.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark-mode');
+            const icon = toggleButton.querySelector('i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        });
+    </script>
+</body>
+</html>
